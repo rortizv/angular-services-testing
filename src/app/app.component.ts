@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Calculator } from './calculator';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'testing-app';
+
+  ngOnInit() {
+    const calculator = new Calculator();
+    console.log(calculator.add(8, 2));
+  }
 }
