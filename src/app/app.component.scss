@@ -1,0 +1,19 @@
+h1 {
+  padding: 2rem 2rem 0 2rem;
+}
+
+nav {
+  margin-left: 3rem;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+}
+
+
+ul.no-decorator {
+  list-style-type: none;
+}
