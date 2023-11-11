@@ -6,8 +6,9 @@ import { ProductService } from './product.service';
 import { Product } from 'src/app/models/product.model';
 import { generateProducts, generateOneProduct } from '../models/product.mock';
 import { environment } from 'src/environments/environment';
+import { CreateProductDTO } from '../models/product.model';
 
-fdescribe('ProductService', () => {
+describe('ProductService', () => {
   let productService: ProductService;
   let httpController: HttpTestingController;
 
@@ -21,6 +22,10 @@ fdescribe('ProductService', () => {
 
     productService = TestBed.inject(ProductService);
     httpController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpController.verify();
   });
 
   it('should be created', () => {
@@ -77,7 +82,6 @@ fdescribe('ProductService', () => {
       const req = httpController.expectOne(url);
       expect(req.request.method).toBe('GET');
       req.flush(dummyProducts);
-      httpController.verify();
     });
   });
 
@@ -99,7 +103,6 @@ fdescribe('ProductService', () => {
       const req = httpController.expectOne(url);
       expect(req.request.method).toBe('GET');
       req.flush(dummyProducts);
-      httpController.verify();
     });
 
     it('should return an array of products with taxes', (doneFn) => {
@@ -143,7 +146,6 @@ fdescribe('ProductService', () => {
       const req = httpController.expectOne(url);
       expect(req.request.method).toBe('GET');
       req.flush(dummyProducts);
-      httpController.verify();
     });
 
     it('should send query params with limit 10 and offset 2', (doneFn) => {
@@ -166,7 +168,74 @@ fdescribe('ProductService', () => {
       const params = req.request.params;
       expect(params.get('limit')).toEqual(limit.toString());
       expect(params.get('offset')).toEqual(offset.toString());
-      httpController.verify();
+    });
+  });
+
+  describe('test for create', () => {
+    it('should create a product', (doneFn) => {
+      // Arrange
+      const dummyProduct = generateOneProduct();
+      const dummyCreateProductDTO: CreateProductDTO = {
+        ...dummyProduct,
+        categoryId: dummyProduct.category.id
+      };
+
+      productService.create({...dummyCreateProductDTO})
+        .subscribe(product => {
+          // Assert
+          expect(product).toEqual(dummyProduct);
+          doneFn();
+        });
+
+      const url = `${environment.API_URL}/api/v1/products`;
+      const req = httpController.expectOne(url);
+      expect(req.request.body).toEqual(dummyCreateProductDTO);
+      expect(req.request.method).toBe('POST');
+      req.flush(dummyProduct);
+    });
+  });
+
+  fdescribe('test for update', () => {
+    it('should update a product', (doneFn) => {
+      // Arrange
+      const dummyProduct = generateOneProduct();
+      const dummyUpdateProductDTO: CreateProductDTO = {
+        ...dummyProduct,
+        categoryId: dummyProduct.category.id
+      };
+
+      productService.update(dummyProduct.id.toString(), {...dummyUpdateProductDTO})
+        .subscribe(product => {
+          // Assert
+          expect(product).toEqual(dummyProduct);
+          doneFn();
+        });
+
+      const url = `${environment.API_URL}/api/v1/products/${dummyProduct.id}`;
+      const req = httpController.expectOne(url);
+      expect(req.request.body).toEqual(dummyUpdateProductDTO);
+      expect(req.request.method).toBe('PUT');
+      req.flush(dummyProduct);
+    });
+  });
+
+  fdescribe('test for delete', () => {
+    it('should delete a product', (doneFn) => {
+      // Arrange
+      const dummyProductResponse = true;
+      const productId = '1';
+
+      productService.delete(productId)
+        .subscribe(product => {
+          // Assert
+          expect(product).toEqual(dummyProductResponse);
+          doneFn();
+        });
+
+      const url = `${environment.API_URL}/api/v1/products/${productId}`;
+      const req = httpController.expectOne(url);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(dummyProductResponse);
     });
   });
 
