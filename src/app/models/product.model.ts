@@ -5,7 +5,8 @@ export interface Product {
   title: string;
   price: number;
   description: string;
-  images: string;
+  images: Array<string>;
+  taxes?: number;
   category: Category;
 }
 
